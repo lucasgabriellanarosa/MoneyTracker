@@ -16,9 +16,6 @@ function Navbar() {
         <FaTags />
       </NavBtn>
 
-      <NavBtn title="Perfil" to="/profile">
-        <FaUser />
-      </NavBtn>
     </nav>
   );
 }

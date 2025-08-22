@@ -1,4 +1,4 @@
-import { FaEdit } from "react-icons/fa"
+import { FaEdit, FaPlus } from "react-icons/fa"
 import { IoFastFood } from "react-icons/io5"
 
 function Categories() {
@@ -8,7 +8,7 @@ function Categories() {
         <h2 className="w-full uppercase text-sm text-gray-700">Período</h2>
         <ul className="w-full flex flex-row gap-2 text-sm">
           <li>
-            <button className="bg-black text-white py-1 px-2 rounded-md">Este Mês</button>
+            <button className="bg-neutral-900 text-white py-1 px-2 rounded-md">Este Mês</button>
           </li>
           <li>
             <button className="py-1 px-2 bg-white border border-gray-300 rounded-md">Este Ano</button>
@@ -19,51 +19,109 @@ function Categories() {
         </ul>
       </aside>
 
-      <section className="px-2 py-4 flex flex-col gap-4">
-        <h2 className="text-gray-600 uppercase">Categorias de Gastos</h2>
+      <section className="px-2 py-4 flex flex-col gap-6">
 
-        <ul className="flex flex-col text-xl gap-3">
-          <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
+        <div className="flex flex-col gap-3">
+          <h2 className="text-gray-600 uppercase">Categorias de Gastos</h2>
 
-            <div className="flex flex-row items-center justify-center gap-2">
+          <ul className="flex flex-col text-xl gap-3">
+            <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
 
-              <div className="bg-yellow-200 text-yellow-700 p-2 rounded-full">
-                <IoFastFood />
+              <div className="flex flex-row items-center justify-center gap-2">
+
+                <div className="bg-yellow-200 text-yellow-700 p-2 rounded-full">
+                  <IoFastFood />
+                </div>
+
+                <div className="text-base">
+                  <h3 className="font-semibold">Alimentação</h3>
+                  <span className="text-sm text-gray-500">12 transações este mês</span>
+                </div>
+
               </div>
 
-              <div className="text-base">
-                <h3 className="font-semibold">Alimentação</h3>
-                <span className="text-sm text-gray-500">12 transações este mês</span>
+              <button className="text-gray-700">
+                <FaEdit />
+              </button>
+
+            </li>
+            <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
+
+              <div className="flex flex-row items-center justify-center gap-2">
+
+                <div className="bg-blue-200 text-blue-700 p-2 rounded-full">
+                  <IoFastFood />
+                </div>
+
+                <div className="text-base">
+                  <h3 className="font-semibold">Alimentação</h3>
+                  <span className="text-sm text-gray-500">12 transações este mês</span>
+                </div>
+
               </div>
 
-            </div>
+              <button className="text-gray-700">
+                <FaEdit />
+              </button>
 
-            <button className="text-gray-700">
-              <FaEdit />
-            </button>
+            </li>
+          </ul>
+        </div>
 
-          </li>
-          <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
+        <div className="flex flex-col gap-3">
+          <h2 className="text-gray-600 uppercase">Categorias de Receitas</h2>
 
-            <div className="flex flex-row items-center justify-center gap-2">
+          <ul className="flex flex-col text-xl gap-3">
+            <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
 
-              <div className="bg-blue-200 text-blue-700 p-2 rounded-full">
-                <IoFastFood />
+              <div className="flex flex-row items-center justify-center gap-2">
+
+                <div className="bg-pink-200 text-pink-700 p-2 rounded-full">
+                  <IoFastFood />
+                </div>
+
+                <div className="text-base">
+                  <h3 className="font-semibold">Alimentação</h3>
+                  <span className="text-sm text-gray-500">12 transações este mês</span>
+                </div>
+
               </div>
 
-              <div className="text-base">
-                <h3 className="font-semibold">Alimentação</h3>
-                <span className="text-sm text-gray-500">12 transações este mês</span>
+              <button className="text-gray-700">
+                <FaEdit />
+              </button>
+
+            </li>
+            <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
+
+              <div className="flex flex-row items-center justify-center gap-2">
+
+                <div className="bg-emerald-200 text-emerald-700 p-2 rounded-full">
+                  <IoFastFood />
+                </div>
+
+                <div className="text-base">
+                  <h3 className="font-semibold">Alimentação</h3>
+                  <span className="text-sm text-gray-500">12 transações este mês</span>
+                </div>
+
               </div>
 
-            </div>
+              <button className="text-gray-700">
+                <FaEdit />
+              </button>
 
-            <button className="text-gray-700">
-              <FaEdit />
-            </button>
+            </li>
+          </ul>
+        </div>
 
-          </li>
-        </ul>
+        <button className="bg-neutral-900 text-white flex flex-row justify-center items-center gap-2 text-sm w-fit self-center py-3 px-12 rounded-sm">
+          <span>
+            <FaPlus />
+          </span>
+          Criar nova categoria
+        </button>
+
       </section>
 
     </>
