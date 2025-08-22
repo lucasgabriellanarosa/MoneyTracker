@@ -1,11 +1,13 @@
 import { FaLock, FaWallet } from "react-icons/fa"
 import { MdEmail } from "react-icons/md"
+import { Link } from "react-router"
+import GoogleBtn from "../../components/GoogleBtn/GoogleBtn"
 
 function Login() {
   return (
-    <div className="bg-neutral-800 h-screen text-white px-2 py-8 flex flex-col gap-8">
+    <div className="bg-neutral-800 min-h-screen text-white px-2 py-8 flex flex-col gap-8">
       <header className="text-sm w-full flex justify-end">
-        <span className="text-neutral-400">Não tem conta? <a href="#" className="text-white">Cadastre-se</a></span>
+        <span className="text-neutral-400">Não tem conta? <Link to={"/register"} className="text-white">Cadastre-se</Link></span>
       </header>
 
       <main className="flex flex-col gap-4">
@@ -54,10 +56,7 @@ function Login() {
 
         <p className="text-center text-neutral-400 text-sm">ou continue com</p>
 
-        <button className="px-4 py-2 bg-white w-fit self-center border flex gap-2 border-slate-200 rounded-lg text-slate-700">
-          <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
-          <span>Login com Google</span>
-        </button>
+        <GoogleBtn />
 
       </main>
     </div>

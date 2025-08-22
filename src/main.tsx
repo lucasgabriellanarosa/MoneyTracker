@@ -7,12 +7,14 @@ import Reports from './pages/Reports/Reports.tsx';
 import Categories from './pages/Categories/Categories.tsx';
 import Profile from './pages/Profile/Profile.tsx';
 import Login from './pages/Login/Login.tsx';
+import Register from './pages/Register/Register.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <Routes>
       
       <Route path='/login' element={<Login />} />
+      <Route path='/register' element={<Register />} />
 
       <Route path="/" element={<Layout />}>
         <Route index element={<App />} />
