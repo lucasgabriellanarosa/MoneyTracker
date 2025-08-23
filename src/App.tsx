@@ -167,7 +167,6 @@ function App() {
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Descrição</label>
                 <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <span className='text-gray-500'>R$</span>
                   <input type="text" className='w-full outline-0' placeholder='Ex: Salário, Freelance...' />
                 </div>
               </div>
@@ -228,7 +227,6 @@ function App() {
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Descrição</label>
                 <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <span className='text-gray-500'>R$</span>
                   <input type="text" className='w-full outline-0' placeholder='Ex: Aluguel, Alimentação...' />
                 </div>
               </div>
