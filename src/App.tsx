@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useEffect, useRef, useState } from 'react';
-import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
+import { MdClose, MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { IoFastFood } from 'react-icons/io5';
 
 function App() {
@@ -44,6 +44,18 @@ function App() {
     }
 
   }, [selectedDate]);
+
+  // Add expense & add profits
+  const [isAddProfitModalOpen, setIsAddProfitModalOpen] = useState(false)
+  const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false)
+
+  const handleAddProfitModal = () => {
+    setIsAddProfitModalOpen(!isAddProfitModalOpen)
+  }
+
+  const handleAddExpenseModal = () => {
+    setIsAddExpenseModalOpen(!isAddExpenseModalOpen)
+  }
 
   return (
     <>
@@ -126,11 +138,137 @@ function App() {
 
       </aside>
 
+      {
+        isAddProfitModalOpen &&
+        <section className='fixed inset-0 overflow-hidden h-screen w-full bg-black/50 z-50 px-1 flex justify-center items-end'>
+
+          <div className='bg-white w-full px-4 py-6 rounded-t-lg flex flex-col gap-4'>
+
+            <div className='flex flex-row justify-between items-center'>
+              <h2 className='font-semibold'>Nova Receita</h2>
+
+              <span className='text-lg'
+                onClick={() => handleAddProfitModal()}
+              >
+                <MdClose />
+              </span>
+            </div>
+
+            <form className='flex flex-col gap-4'>
+
+              <div className='flex flex-col gap-1'>
+                <label className='text-sm text-gray-700'>Valor</label>
+                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                  <span className='text-gray-500'>R$</span>
+                  <input type="number" className='w-full outline-0' placeholder='0,00' />
+                </div>
+              </div>
+
+              <div className='flex flex-col gap-1'>
+                <label className='text-sm text-gray-700'>Descrição</label>
+                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                  <span className='text-gray-500'>R$</span>
+                  <input type="text" className='w-full outline-0' placeholder='Ex: Salário, Freelance...' />
+                </div>
+              </div>
+
+              <div className='flex flex-col gap-1'>
+                <label className='text-sm text-gray-700'>Categoria</label>
+                <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                  <option value="salario" selected>Salário</option>
+                  <option value="freelance">Freelance</option>
+                </select>
+              </div>
+
+              <div className='flex flex-col gap-1'>
+                <label className='text-sm text-gray-700'>Data</label>
+                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                  <input type="date" className='w-full outline-0' />
+                </div>
+              </div>
+
+              <button className='bg-green-500 text-white font-semibold py-2 rounded-md'>
+                Adicionar Receita
+              </button>
+
+            </form>
+
+          </div>
+
+
+        </section>
+      }
+
+      {
+        isAddExpenseModalOpen &&
+        <section className='fixed inset-0 overflow-hidden h-screen w-full bg-black/50 z-50 px-1 flex justify-center items-end'>
+
+          <div className='bg-white w-full px-4 py-6 rounded-t-lg flex flex-col gap-4'>
+
+            <div className='flex flex-row justify-between items-center'>
+              <h2 className='font-semibold'>Novo Gasto</h2>
+
+              <span className='text-lg'
+                onClick={() => handleAddExpenseModal()}
+              >
+                <MdClose />
+              </span>
+            </div>
+
+            <form className='flex flex-col gap-4'>
+
+              <div className='flex flex-col gap-1'>
+                <label className='text-sm text-gray-700'>Valor</label>
+                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                  <span className='text-gray-500'>R$</span>
+                  <input type="number" className='w-full outline-0' placeholder='0,00' />
+                </div>
+              </div>
+
+              <div className='flex flex-col gap-1'>
+                <label className='text-sm text-gray-700'>Descrição</label>
+                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                  <span className='text-gray-500'>R$</span>
+                  <input type="text" className='w-full outline-0' placeholder='Ex: Aluguel, Alimentação...' />
+                </div>
+              </div>
+
+              <div className='flex flex-col gap-1'>
+                <label className='text-sm text-gray-700'>Categoria</label>
+                <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                  <option value="salario" selected>Alimentação</option>
+                  <option value="freelance">Internet</option>
+                </select>
+              </div>
+
+              <div className='flex flex-col gap-1'>
+                <label className='text-sm text-gray-700'>Data</label>
+                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                  <input type="date" className='w-full outline-0' />
+                </div>
+              </div>
+
+              <button className='bg-red-500 text-white font-semibold py-2 rounded-md'>
+                Adicionar Gasto
+              </button>
+
+            </form>
+
+          </div>
+
+
+        </section>
+      }
+
+
+
       <section className='flex flex-col px-2 py-4 gap-6'>
 
         <div className='flex flex-row justify-between gap-4'>
 
-          <button className='bg-slate-800 text-white flex flex-col justify-center items-center rounded-lg p-4 w-full'>
+          <button className='bg-slate-800 text-white flex flex-col justify-center items-center rounded-lg p-4 w-full'
+            onClick={() => handleAddProfitModal()}
+          >
 
             <span className='text-lg'>
               <IoMdAddCircleOutline />
@@ -140,13 +278,16 @@ function App() {
 
           </button>
 
-          <button className='border border-gray-400 flex flex-col justify-center items-center rounded-lg p-4 w-full'>
+          <button className='border border-gray-400 flex flex-col justify-center items-center rounded-lg p-4 w-full'
+            onClick={() => handleAddExpenseModal()}
+          >
 
             <span className='text-lg'>
               <IoMdRemoveCircleOutline />
             </span>
 
-            <span>Adicionar Gasto</span>
+            <span
+            >Adicionar Gasto</span>
 
           </button>
 
@@ -162,7 +303,7 @@ function App() {
           <ul className='flex flex-col gap-2'>
 
             <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4'>
-              <div className='text-2xl p-2 rounded-full bg-gray-200 text-gray-600'>
+              <div className='text-2xl p-2 rounded-full bg-pink-200 text-pink-700 '>
                 <IoFastFood />
               </div>
 
@@ -181,7 +322,7 @@ function App() {
             </li>
 
             <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4'>
-              <div className='text-2xl p-2 rounded-full bg-gray-200 text-gray-600'>
+              <div className='text-2xl p-2 rounded-full bg-orange-200 text-orange-700'>
                 <IoFastFood />
               </div>
 
@@ -204,6 +345,7 @@ function App() {
         </div>
 
       </section>
+
 
     </>
   )
