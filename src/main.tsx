@@ -8,16 +8,21 @@ import Categories from './pages/Categories/Categories.tsx';
 import Profile from './pages/Profile/Profile.tsx';
 import Login from './pages/Login/Login.tsx';
 import Register from './pages/Register/Register.tsx';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <Routes>
-      
+
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
 
-      <Route path="/" element={<Layout />}>
-        <Route index element={<App />} />
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      }>
+          <Route index element={<App />} />
         <Route path='/reports' element={<Reports />} />
         <Route path='/categories' element={<Categories />} />
         <Route path='/profile' element={<Profile />} />

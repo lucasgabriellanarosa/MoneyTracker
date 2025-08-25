@@ -1,7 +1,16 @@
 import { FaWallet } from "react-icons/fa"
 import { NavLink } from "react-router"
+import { useUserData } from "../../hooks/useUserData"
 
 function Header() {
+
+  const { user, loading } = useUserData()
+
+  console.log(user)
+
+  if (loading) return <p>Carregando...</p>
+  if (!user) return <p>Nenhum usuário logado.</p>
+
   return (
     <header className="flex flex-row justify-between items-center p-2 border-b border-gray-200">
       <div className="flex justify-center items-center gap-2">
@@ -11,7 +20,13 @@ function Header() {
       </div>
 
       <NavLink to={'/profile'}>
-        <img className="w-12 rounded-full" src="https://yt3.googleusercontent.com/L8Rm0h8FjQ0t9eGytIvaT8oV43v5K0tX6lmTndcbOpPOBoHcgITnuqK-1jUfNY0CTSUSul4ffg=s900-c-k-c0x00ffffff-no-rj" />
+        {
+          user?.user_metadata?.avatar_url &&
+          (
+            <img className="w-12 rounded-full" src={user?.user_metadata?.avatar_url} referrerPolicy="no-referrer"/>
+          )
+        }
+
       </NavLink>
     </header>
   )
