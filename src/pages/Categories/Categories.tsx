@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaBook, FaEdit, FaGamepad, FaPlus } from "react-icons/fa"
 import { MdClose } from "react-icons/md"
 import { FaUtensils, FaBus, FaShoppingCart, FaHeartbeat } from "react-icons/fa";
 import { supabase } from "../../../supabaseClient";
 import { useUserData } from "../../hooks/useUserData";
+import useGetCategories from "../../hooks/useGetCategories";
 
 function Categories() {
   const handleIsAddCategoryOpen = () => {
@@ -46,14 +47,6 @@ function Categories() {
       return
     }
 
-    console.log({
-      name: categoryName,
-      user_id: user.id,
-      color: selectedColor,
-      type: categoryType,
-      icon: selectedIcon,
-    })
-
     const { data, error } = await supabase
       .from("categories")
       .insert([
@@ -69,9 +62,24 @@ function Categories() {
     if (error) {
       console.error("Erro ao inserir categoria:", error.message)
     } else {
-      console.log("Categoria adicionada:", data)
+      handleIsAddCategoryOpen()
+      setCategoryName('')
+      setCategoryType('')
+      setSelectedColor('red')
+      setSelectedIcon('food')
     }
   }
+
+  const { categories, loading, error } = useGetCategories();
+
+  const [userCategories, setUserCategories] = useState(categories)
+
+  useEffect(() => {
+    setUserCategories(categories)
+  }, [categories])
+
+
+
 
 
   return (
@@ -90,6 +98,7 @@ function Categories() {
           </li>
         </ul>
       </aside>
+
 
       {
         isAddCategoryModalOpen &&
@@ -178,46 +187,34 @@ function Categories() {
           <h2 className="text-gray-600 uppercase">Categorias de Gastos</h2>
 
           <ul className="flex flex-col text-xl gap-3">
-            <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
 
-              <div className="flex flex-row items-center justify-center gap-2">
+            {
+              userCategories > [] &&
+              userCategories.map((cat) => (
+                <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
 
-                <div className="bg-yellow-200 text-yellow-700 p-2 rounded-full">
-                  <FaUtensils />
-                </div>
+                  <div className="flex flex-row items-center justify-center gap-2">
 
-                <div className="text-base">
-                  <h3 className="font-semibold">Alimentação</h3>
-                  <span className="text-sm text-gray-500">12 transações este mês</span>
-                </div>
+                    {/* <div className="bg-yellow-200 text-yellow-700 p-2 rounded-full">
+                      <FaUtensils />
+                    </div> */}
+                    <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
+                      {iconMap[cat.icon]}
+                    </div>
 
-              </div>
+                    <div className="text-base">
+                      <h3 className="font-semibold">{cat.name}</h3>
+                      <span className="text-sm text-gray-500">12 transações este mês</span>
+                    </div>
 
-              <button className="text-gray-700">
-                <FaEdit />
-              </button>
+                  </div>
 
-            </li>
-            <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
+                  <button className="text-gray-700">
+                    <FaEdit />
+                  </button>
 
-              <div className="flex flex-row items-center justify-center gap-2">
-
-                <div className="bg-blue-200 text-blue-700 p-2 rounded-full">
-                  <FaUtensils />
-                </div>
-
-                <div className="text-base">
-                  <h3 className="font-semibold">Alimentação</h3>
-                  <span className="text-sm text-gray-500">12 transações este mês</span>
-                </div>
-
-              </div>
-
-              <button className="text-gray-700">
-                <FaEdit />
-              </button>
-
-            </li>
+                </li>
+              ))}
           </ul>
         </div>
 
