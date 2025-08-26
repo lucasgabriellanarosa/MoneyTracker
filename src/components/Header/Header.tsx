@@ -6,8 +6,6 @@ function Header() {
 
   const { user, loading } = useUserData()
 
-  console.log(user)
-
   if (loading) return <p>Carregando...</p>
   if (!user) return <p>Nenhum usuário logado.</p>
 
