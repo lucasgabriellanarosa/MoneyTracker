@@ -5,6 +5,8 @@ import { FaUtensils, FaBus, FaShoppingCart, FaHeartbeat } from "react-icons/fa";
 import { supabase } from "../../../supabaseClient";
 import { useUserData } from "../../hooks/useUserData";
 import useGetCategories from "../../hooks/useGetCategories";
+import * as FaIcons from "react-icons/fa";
+import { Dialog } from "@headlessui/react";
 
 function Categories() {
   const handleIsAddCategoryOpen = () => {
@@ -78,9 +80,20 @@ function Categories() {
     setUserCategories(categories)
   }, [categories])
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
+  // Converte os ícones em array
+  const icons = Object.entries(FaIcons); // [["FaBeer", <FaBeer />], ["FaCar", <FaCar />], ...]
 
+  // Filtra ícones pelo texto digitado
+  const filteredIcons = icons.filter(([name]) =>
+    name.toLowerCase().includes(search.toLowerCase())
+  );
 
+  const onIconSelect = (icon: React.ElementType) => {
+    setSelectedIcon(icon);
+  };
 
   return (
     <>
@@ -150,7 +163,7 @@ function Categories() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              {/* <div className="flex flex-col gap-2">
                 <label className="text-sm text-gray-700">Ícone</label>
                 <div className="grid grid-cols-6 gap-2">
                   {Object.keys(iconMap).map((iconKey) => (
@@ -166,6 +179,55 @@ function Categories() {
                       {iconMap[iconKey]}
                     </button>
                   ))}
+                </div>
+              </div> */}
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm text-gray-700">Ícone</label>
+                <div className="grid grid-cols-6 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(true)}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 border rounded-md ${colors[selectedColor].text}`}
+                  >
+                    Selecionar Ícone
+                  </button>
+
+                  <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+                    <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+                    <div className="fixed inset-0 flex items-center justify-center">
+                      <div className="bg-white rounded-lg shadow-lg p-6 w-[600px] max-h-[80vh] flex flex-col">
+                        <h2 className="text-lg font-semibold mb-4">Escolha um ícone</h2>
+
+                        {/* Campo de busca */}
+                        <input
+                          type="text"
+                          placeholder="Buscar ícone..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="border border-gray-300 rounded-md p-2 mb-4"
+                        />
+
+                        {/* Grid com ícones */}
+                        <div className="grid grid-cols-8 gap-3 overflow-y-auto">
+                          {filteredIcons.map(([name, Icon]) => (
+                            <button
+                              key={name}
+                              type="button"
+                              title={name}
+                              onClick={() => {
+                                onIconSelect(name);
+                                setIsOpen(false);
+                              }}
+                              className={`p-2 text-xl border rounded-md hover:bg-gray-100 transition ${colors[selectedColor].text}`}
+                            >
+                              <Icon />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </Dialog>
                 </div>
               </div>
 
@@ -187,17 +249,45 @@ function Categories() {
           <h2 className="text-gray-600 uppercase">Categorias de Gastos</h2>
 
           <ul className="flex flex-col text-xl gap-3">
-
             {
               userCategories > [] &&
-              userCategories.map((cat) => (
+              userCategories.filter(cat => cat.type == 'gasto').map((cat) => (
                 <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
 
                   <div className="flex flex-row items-center justify-center gap-2">
 
-                    {/* <div className="bg-yellow-200 text-yellow-700 p-2 rounded-full">
-                      <FaUtensils />
-                    </div> */}
+                    <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
+                      {iconMap[cat.icon]}
+                    </div>
+
+                    <div className="text-base">
+                      <h3 className="font-semibold">{cat.name}</h3>
+                      <span className="text-sm text-gray-500">12 transações este mês</span>
+                    </div>
+
+                  </div>
+
+                  <button className="text-gray-700">
+                    <FaEdit />
+                  </button>
+
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <h2 className="text-gray-600 uppercase">Categorias de Receitas</h2>
+
+          <ul className="flex flex-col text-xl gap-3">
+            {
+              userCategories > [] &&
+              userCategories.filter(cat => cat.type == 'receita').map((cat) => (
+                <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
+
+                  <div className="flex flex-row items-center justify-center gap-2">
+
                     <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
                       {iconMap[cat.icon]}
                     </div>
@@ -218,53 +308,6 @@ function Categories() {
           </ul>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <h2 className="text-gray-600 uppercase">Categorias de Receitas</h2>
-
-          <ul className="flex flex-col text-xl gap-3">
-            <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
-
-              <div className="flex flex-row items-center justify-center gap-2">
-
-                <div className="bg-pink-200 text-pink-700 p-2 rounded-full">
-                  <FaUtensils />
-                </div>
-
-                <div className="text-base">
-                  <h3 className="font-semibold">Alimentação</h3>
-                  <span className="text-sm text-gray-500">12 transações este mês</span>
-                </div>
-
-              </div>
-
-              <button className="text-gray-700">
-                <FaEdit />
-              </button>
-
-            </li>
-            <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs">
-
-              <div className="flex flex-row items-center justify-center gap-2">
-
-                <div className="bg-emerald-200 text-emerald-700 p-2 rounded-full">
-                  <FaUtensils />
-                </div>
-
-                <div className="text-base">
-                  <h3 className="font-semibold">Alimentação</h3>
-                  <span className="text-sm text-gray-500">12 transações este mês</span>
-                </div>
-
-              </div>
-
-              <button className="text-gray-700">
-                <FaEdit />
-              </button>
-
-            </li>
-          </ul>
-        </div>
-
         <button className="bg-neutral-900 text-white flex flex-row justify-center items-center gap-2 text-sm w-fit self-center py-3 px-12 rounded-sm"
           onClick={() => handleIsAddCategoryOpen()}
         >
@@ -274,7 +317,7 @@ function Categories() {
           Criar nova categoria
         </button>
 
-      </section>
+      </section >
 
     </>
   )
