@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { FaBook, FaEdit, FaGamepad, FaPlus } from "react-icons/fa"
 import { MdClose } from "react-icons/md"
 import { FaUtensils, FaBus, FaShoppingCart, FaHeartbeat } from "react-icons/fa";
@@ -30,15 +30,7 @@ function Categories() {
     pink: { bg: 'bg-pink-200', text: 'text-pink-700' },
   };
 
-  const [selectedIcon, setSelectedIcon] = useState("food");
-  const iconMap = {
-    food: <FaUtensils />,
-    transport: <FaBus />,
-    shopping: <FaShoppingCart />,
-    health: <FaHeartbeat />,
-    studies: <FaBook />,
-    games: <FaGamepad />,
-  };
+  const [selectedIcon, setSelectedIcon] = useState("FaUtensils");
 
   const { user } = useUserData()
 
@@ -83,10 +75,8 @@ function Categories() {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  // Converte os ícones em array
-  const icons = Object.entries(FaIcons); // [["FaBeer", <FaBeer />], ["FaCar", <FaCar />], ...]
+  const icons = Object.entries(FaIcons);
 
-  // Filtra ícones pelo texto digitado
   const filteredIcons = icons.filter(([name]) =>
     name.toLowerCase().includes(search.toLowerCase())
   );
@@ -163,53 +153,44 @@ function Categories() {
                 </div>
               </div>
 
-              {/* <div className="flex flex-col gap-2">
-                <label className="text-sm text-gray-700">Ícone</label>
-                <div className="grid grid-cols-6 gap-2">
-                  {Object.keys(iconMap).map((iconKey) => (
-                    <button
-                      key={iconKey}
-                      type="button"
-                      className={`p-2 border rounded-md flex items-center justify-center text-xl transition ${selectedIcon === iconKey
-                        ? `scale-110 ${colors[selectedColor].text} ${colors[selectedColor].bg}`
-                        : "border-gray-300"
-                        }`}
-                      onClick={() => setSelectedIcon(iconKey)}
-                    >
-                      {iconMap[iconKey]}
-                    </button>
-                  ))}
-                </div>
-              </div> */}
-
               <div className="flex flex-col gap-2">
-                <label className="text-sm text-gray-700">Ícone</label>
+                <label className="text-sm text-gray-700">Selecionar Ícone</label>
                 <div className="grid grid-cols-6 gap-2">
                   <button
                     type="button"
                     onClick={() => setIsOpen(true)}
-                    className={`flex items-center justify-center gap-2 px-4 py-2 border rounded-md ${colors[selectedColor].text}`}
+                    className={`flex flex-row items-center justify-center w-fit gap-2 px-4 py-2 border rounded-md ${colors[selectedColor].text} ${colors[selectedColor].bg}`}
                   >
-                    Selecionar Ícone
+                    <span className="text-lg">
+                      {
+                        FaIcons[selectedIcon] &&
+                        React.createElement(FaIcons[selectedIcon])
+                      }
+                    </span>
                   </button>
 
                   <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
                     <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
                     <div className="fixed inset-0 flex items-center justify-center">
-                      <div className="bg-white rounded-lg shadow-lg p-6 w-[600px] max-h-[80vh] flex flex-col">
-                        <h2 className="text-lg font-semibold mb-4">Escolha um ícone</h2>
+                      <div className="bg-white rounded-lg shadow-lg p-6 w-[600px] max-h-[80vh] flex flex-col gap-2">
+                        <span className="flex flex-row justify-between items-center text-sm">
+                          <h2 className="font-semibold">Escolha um ícone</h2>
 
-                        {/* Campo de busca */}
+                          <button className="text-base" onClick={() => setIsOpen(false)}>
+                            <MdClose />
+                          </button>
+
+                        </span>
+
                         <input
                           type="text"
                           placeholder="Buscar ícone..."
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
-                          className="border border-gray-300 rounded-md p-2 mb-4"
+                          className="border border-gray-300 rounded-md p-2 mb-4 text-sm"
                         />
 
-                        {/* Grid com ícones */}
-                        <div className="grid grid-cols-8 gap-3 overflow-y-auto">
+                        <div className="grid grid-cols-7 gap-3 overflow-y-auto">
                           {filteredIcons.map(([name, Icon]) => (
                             <button
                               key={name}
@@ -219,7 +200,7 @@ function Categories() {
                                 onIconSelect(name);
                                 setIsOpen(false);
                               }}
-                              className={`p-2 text-xl border rounded-md hover:bg-gray-100 transition ${colors[selectedColor].text}`}
+                              className={`p-2 text-xl border rounded-md hover:bg-gray-100 transition flex items-center justify-center w-fit ${colors[selectedColor].text} ${colors[selectedColor].bg}`}
                             >
                               <Icon />
                             </button>
@@ -228,6 +209,7 @@ function Categories() {
                       </div>
                     </div>
                   </Dialog>
+
                 </div>
               </div>
 
@@ -257,7 +239,7 @@ function Categories() {
                   <div className="flex flex-row items-center justify-center gap-2">
 
                     <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
-                      {iconMap[cat.icon]}
+                      {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
                     </div>
 
                     <div className="text-base">
@@ -289,7 +271,7 @@ function Categories() {
                   <div className="flex flex-row items-center justify-center gap-2">
 
                     <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
-                      {iconMap[cat.icon]}
+                      {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
                     </div>
 
                     <div className="text-base">
