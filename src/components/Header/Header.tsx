@@ -4,10 +4,7 @@ import { useUserData } from "../../hooks/useUserData"
 
 function Header() {
 
-  const { user, loading } = useUserData()
-
-  if (loading) return <p>Carregando...</p>
-  if (!user) return <p>Nenhum usuário logado.</p>
+  const { user } = useUserData()
 
   return (
     <header className="flex flex-row justify-between items-center p-2 border-b border-gray-200">

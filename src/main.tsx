@@ -22,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
           <Layout />
         </ProtectedRoute>
       }>
-          <Route index element={<App />} />
+        <Route index element={<App />} />
         <Route path='/reports' element={<Reports />} />
         <Route path='/categories' element={<Categories />} />
         <Route path='/profile' element={<Profile />} />

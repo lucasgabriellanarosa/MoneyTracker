@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react"
-import { FaBook, FaEdit, FaGamepad, FaPlus } from "react-icons/fa"
+import { FaEdit, FaPlus } from "react-icons/fa"
 import { MdClose } from "react-icons/md"
-import { FaUtensils, FaBus, FaShoppingCart, FaHeartbeat } from "react-icons/fa";
 import { supabase } from "../../../supabaseClient";
 import { useUserData } from "../../hooks/useUserData";
 import useGetCategories from "../../hooks/useGetCategories";
 import * as FaIcons from "react-icons/fa";
 import { Dialog } from "@headlessui/react";
+import { FourSquare } from "react-loading-indicators";
 
 function Categories() {
   const handleIsAddCategoryOpen = () => {
@@ -225,81 +225,97 @@ function Categories() {
         </section>
       }
 
-      <section className="px-2 py-4 flex flex-col gap-6">
+      {
+        loading ?
+          <section className="flex justify-center items-center py-20">
+            <FourSquare color="#0f172a" size="large" text="Carregando..." textColor="" />
+          </section>
+          :
+          <section className="px-2 py-4 flex flex-col gap-6">
 
-        <div className="flex flex-col gap-3">
-          <h2 className="text-gray-600 uppercase">Categorias de Gastos</h2>
+            <div className="flex flex-col gap-3">
+              <h2 className="text-gray-600 uppercase">Categorias de Gastos</h2>
 
-          <ul className="flex flex-col text-xl gap-3">
-            {
-              userCategories > [] &&
-              userCategories.filter(cat => cat.type == 'gasto').map((cat) => (
-                <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
+              <ul className="flex flex-col text-xl gap-3">
+                {
+                  userCategories > [] ?
+                  userCategories.filter(cat => cat.type == 'gasto').map((cat) => (
+                    <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
 
-                  <div className="flex flex-row items-center justify-center gap-2">
+                      <div className="flex flex-row items-center justify-center gap-2">
 
-                    <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
-                      {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
-                    </div>
+                        <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
+                          {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
+                        </div>
 
-                    <div className="text-base">
-                      <h3 className="font-semibold">{cat.name}</h3>
-                      <span className="text-sm text-gray-500">12 transações este mês</span>
-                    </div>
+                        <div className="text-base">
+                          <h3 className="font-semibold">{cat.name}</h3>
+                          <span className="text-sm text-gray-500">12 transações este mês</span>
+                        </div>
 
-                  </div>
+                      </div>
 
-                  <button className="text-gray-700">
-                    <FaEdit />
-                  </button>
+                      <button className="text-gray-700">
+                        <FaEdit />
+                      </button>
 
-                </li>
-              ))
-            }
-          </ul>
-        </div>
+                    </li>
+                  ))
+                  :
+                  <p>Nenhuma categoria de gasto criada!</p>
+                }
+              </ul>
+            </div>
 
-        <div className="flex flex-col gap-3">
-          <h2 className="text-gray-600 uppercase">Categorias de Receitas</h2>
+            <div className="flex flex-col gap-3">
+              <h2 className="text-gray-600 uppercase">Categorias de Receitas</h2>
 
-          <ul className="flex flex-col text-xl gap-3">
-            {
-              userCategories > [] &&
-              userCategories.filter(cat => cat.type == 'receita').map((cat) => (
-                <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
+              <ul className="flex flex-col text-xl gap-3">
+                {
 
-                  <div className="flex flex-row items-center justify-center gap-2">
+                  userCategories > [] ?
+                    userCategories.filter(cat => cat.type == 'receita').map((cat) => (
+                      <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
 
-                    <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
-                      {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
-                    </div>
+                        <div className="flex flex-row items-center justify-center gap-2">
 
-                    <div className="text-base">
-                      <h3 className="font-semibold">{cat.name}</h3>
-                      <span className="text-sm text-gray-500">12 transações este mês</span>
-                    </div>
+                          <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
+                            {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
+                          </div>
 
-                  </div>
+                          <div className="text-base">
+                            <h3 className="font-semibold">{cat.name}</h3>
+                            <span className="text-sm text-gray-500">12 transações este mês</span>
+                          </div>
 
-                  <button className="text-gray-700">
-                    <FaEdit />
-                  </button>
+                        </div>
 
-                </li>
-              ))}
-          </ul>
-        </div>
+                        <button className="text-gray-700">
+                          <FaEdit />
+                        </button>
 
-        <button className="bg-neutral-900 text-white flex flex-row justify-center items-center gap-2 text-sm w-fit self-center py-3 px-12 rounded-sm"
-          onClick={() => handleIsAddCategoryOpen()}
-        >
-          <span>
-            <FaPlus />
-          </span>
-          Criar nova categoria
-        </button>
+                      </li>
+                    ))
+                  :
+                  <p>Nenhuma categoria de gasto criada!</p>
 
-      </section >
+                }
+
+              </ul>
+            </div>
+
+            <button className="bg-neutral-900 text-white flex flex-row justify-center items-center gap-2 text-sm w-fit self-center py-3 px-12 rounded-sm"
+              onClick={() => handleIsAddCategoryOpen()}
+            >
+              <span>
+                <FaPlus />
+              </span>
+              Criar nova categoria
+            </button>
+
+          </section >
+      }
+
 
     </>
   )
