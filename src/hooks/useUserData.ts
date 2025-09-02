@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../supabaseClient"
+import type { User } from "@supabase/supabase-js"
 
 export function useUserData() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 

@@ -30,11 +30,11 @@ function Categories() {
     pink: { bg: 'bg-pink-200', text: 'text-pink-700' },
   };
 
-  const [selectedIcon, setSelectedIcon] = useState("FaUtensils");
+  const [selectedIcon, setSelectedIcon] = useState<string>("FaUtensils");
 
   const { user } = useUserData()
 
-  const handleAddCategory = async (e) => {
+  const handleAddCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!user) {
       console.error("Usuário não logado")
@@ -81,8 +81,8 @@ function Categories() {
     name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const onIconSelect = (icon: React.ElementType) => {
-    setSelectedIcon(icon);
+  const onIconSelect = (iconName: string) => {
+    setSelectedIcon(iconName);
   };
 
   return (
@@ -162,10 +162,8 @@ function Categories() {
                     className={`flex flex-row items-center justify-center w-fit gap-2 px-4 py-2 border rounded-md ${colors[selectedColor].text} ${colors[selectedColor].bg}`}
                   >
                     <span className="text-lg">
-                      {
-                        FaIcons[selectedIcon] &&
-                        React.createElement(FaIcons[selectedIcon])
-                      }
+                      {FaIcons[selectedIcon] && React.createElement(FaIcons[selectedIcon])}
+
                     </span>
                   </button>
 
@@ -239,30 +237,30 @@ function Categories() {
               <ul className="flex flex-col text-xl gap-3">
                 {
                   userCategories > [] ?
-                  userCategories.filter(cat => cat.type == 'gasto').map((cat) => (
-                    <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
+                    userCategories.filter(cat => cat.type == 'gasto').map((cat) => (
+                      <li className="flex flex-row items-center justify-between border border-gray-300 rounded-md px-4 py-2 shadow-xs" key={cat.id}>
 
-                      <div className="flex flex-row items-center justify-center gap-2">
+                        <div className="flex flex-row items-center justify-center gap-2">
 
-                        <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
-                          {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
+                          <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
+                            {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
+                          </div>
+
+                          <div className="text-base">
+                            <h3 className="font-semibold">{cat.name}</h3>
+                            <span className="text-sm text-gray-500">12 transações este mês</span>
+                          </div>
+
                         </div>
 
-                        <div className="text-base">
-                          <h3 className="font-semibold">{cat.name}</h3>
-                          <span className="text-sm text-gray-500">12 transações este mês</span>
-                        </div>
+                        <button className="text-gray-700">
+                          <FaEdit />
+                        </button>
 
-                      </div>
-
-                      <button className="text-gray-700">
-                        <FaEdit />
-                      </button>
-
-                    </li>
-                  ))
-                  :
-                  <p>Nenhuma categoria de gasto criada!</p>
+                      </li>
+                    ))
+                    :
+                    <p>Nenhuma categoria de gasto criada!</p>
                 }
               </ul>
             </div>
@@ -296,8 +294,8 @@ function Categories() {
 
                       </li>
                     ))
-                  :
-                  <p>Nenhuma categoria de gasto criada!</p>
+                    :
+                    <p>Nenhuma categoria de gasto criada!</p>
 
                 }
 
