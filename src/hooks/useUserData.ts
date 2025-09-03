@@ -5,7 +5,7 @@ import type { User } from "@supabase/supabase-js"
 export function useUserData() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true
@@ -14,7 +14,7 @@ export function useUserData() {
       setLoading(true)
       await supabase.auth.refreshSession()
       const { data, error } = await supabase.auth.getUser()
-      if (error) setError(error)
+      if (error) setError(error.message)
       if (isMounted) {
         setUser(data?.user ?? null)
         setLoading(false)

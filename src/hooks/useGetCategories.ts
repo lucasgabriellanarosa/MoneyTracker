@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
-import type { Category } from "../@types/category";
+import type { Category } from "../@types/Category";
 
 function useGetCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -11,7 +11,7 @@ function useGetCategories() {
     async function fetchCategories() {
       const { data, error } = await supabase.from("categories").select();
       if (error) {
-        setError(error);
+        setError(error.message);
       } else {
         setCategories(data);
       }
