@@ -18,7 +18,7 @@ function Categories() {
   const [categoryName, setCategoryName] = useState("")
   const [categoryType, setCategoryType] = useState("gasto")
 
-  const [selectedColor, setSelectedColor] = useState('red')
+  const [selectedColor, setSelectedColor] = useState<keyof typeof colors>('red')
   const colors = {
     red: { bg: 'bg-red-200', text: 'text-red-700' },
     orange: { bg: 'bg-orange-200', text: 'text-orange-700' },
@@ -28,9 +28,9 @@ function Categories() {
     blue: { bg: 'bg-blue-200', text: 'text-blue-700' },
     purple: { bg: 'bg-purple-200', text: 'text-purple-700' },
     pink: { bg: 'bg-pink-200', text: 'text-pink-700' },
-  };
+  } as const;
 
-  const [selectedIcon, setSelectedIcon] = useState<string>("FaUtensils");
+  const [selectedIcon, setSelectedIcon] = useState<keyof typeof FaIcons>("FaUtensils");
 
   const { user } = useUserData()
 
@@ -60,7 +60,7 @@ function Categories() {
       setCategoryName('')
       setCategoryType('')
       setSelectedColor('red')
-      setSelectedIcon('food')
+      setSelectedIcon('FaUtensils')
     }
   }
 
@@ -81,7 +81,7 @@ function Categories() {
     name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const onIconSelect = (iconName: string) => {
+  const onIconSelect = (iconName: keyof typeof FaIcons) => {
     setSelectedIcon(iconName);
   };
 
@@ -139,7 +139,7 @@ function Categories() {
               <div className="flex flex-col gap-2">
                 <label className="text-sm text-gray-700">Cor</label>
                 <div className="grid grid-cols-4 gap-4 w-fit">
-                  {Object.keys(colors).map((color) => (
+                  {(Object.keys(colors) as Array<keyof typeof colors>).map((color) => (
                     <button
                       key={color}
                       type="button"
@@ -163,7 +163,6 @@ function Categories() {
                   >
                     <span className="text-lg">
                       {FaIcons[selectedIcon] && React.createElement(FaIcons[selectedIcon])}
-
                     </span>
                   </button>
 
@@ -195,7 +194,7 @@ function Categories() {
                               type="button"
                               title={name}
                               onClick={() => {
-                                onIconSelect(name);
+                                onIconSelect(name as keyof typeof FaIcons);
                                 setIsOpen(false);
                               }}
                               className={`p-2 text-xl border rounded-md hover:bg-gray-100 transition flex items-center justify-center w-fit ${colors[selectedColor].text} ${colors[selectedColor].bg}`}
@@ -242,8 +241,9 @@ function Categories() {
 
                         <div className="flex flex-row items-center justify-center gap-2">
 
-                          <div className={`${colors[cat.color].bg} ${colors[cat.color].text} p-2 rounded-full`}>
-                            {FaIcons[cat.icon] && React.createElement(FaIcons[cat.icon])}
+                          <div className={`${colors[cat.color as keyof typeof colors].bg} ${colors[cat.color as keyof typeof colors].text} p-2 rounded-full`}>
+                            {FaIcons[cat.icon as keyof typeof FaIcons] &&
+                              React.createElement(FaIcons[cat.icon as keyof typeof FaIcons])}
                           </div>
 
                           <div className="text-base">
