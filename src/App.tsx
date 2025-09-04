@@ -8,8 +8,30 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useEffect, useRef, useState } from 'react';
 import { MdClose, MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { IoFastFood } from 'react-icons/io5';
+import useGetCategories from './hooks/useGetCategories';
+import type { Category } from './@types/Category';
 
 function App() {
+
+  // Add expense & add profits
+  const [isAddProfitModalOpen, setIsAddProfitModalOpen] = useState(false)
+  const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false)
+
+  const { categories } = useGetCategories()
+
+  const [profitCategories, setProfitCategories] = useState<Category[]>([])
+  const [expenseCategories, setExpenseCategories] = useState<Category[]>([])
+
+  const handleAddProfitModal = () => {
+    console.log(profitCategories)
+    setIsAddProfitModalOpen(!isAddProfitModalOpen)
+  }
+
+  const handleAddExpenseModal = () => {
+    console.log(expenseCategories)
+    setIsAddExpenseModalOpen(!isAddExpenseModalOpen)
+  }
+
 
   // Dates and calendar
   dayjs.locale('pt-br');
@@ -43,19 +65,12 @@ function App() {
       });
     }
 
+    setProfitCategories(categories.filter((cat) => cat.type === "receita"))
+    setExpenseCategories(categories.filter((cat) => cat.type === "gasto"))
+
   }, [selectedDate]);
 
-  // Add expense & add profits
-  const [isAddProfitModalOpen, setIsAddProfitModalOpen] = useState(false)
-  const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false)
-
-  const handleAddProfitModal = () => {
-    setIsAddProfitModalOpen(!isAddProfitModalOpen)
-  }
-
-  const handleAddExpenseModal = () => {
-    setIsAddExpenseModalOpen(!isAddExpenseModalOpen)
-  }
+  console.log(categories)
 
   return (
     <>

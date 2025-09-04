@@ -13,7 +13,6 @@ function useGetCategories() {
     async function fetchCategories() {
       if (!user) {
         setCategories([]);
-        setLoading(false);
         return;
       }
 
