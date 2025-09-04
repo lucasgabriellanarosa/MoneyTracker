@@ -68,9 +68,7 @@ function App() {
     setProfitCategories(categories.filter((cat) => cat.type === "receita"))
     setExpenseCategories(categories.filter((cat) => cat.type === "gasto"))
 
-  }, [selectedDate]);
-
-  console.log(categories)
+  }, [selectedDate, categories]);
 
   return (
     <>
@@ -189,8 +187,11 @@ function App() {
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Categoria</label>
                 <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <option value="salario" selected>Salário</option>
-                  <option value="freelance">Freelance</option>
+                  {
+                    profitCategories.map((category, key) => (
+                      <option value={category.name} key={key}>{category.name}</option>
+                    ))
+                  }
                 </select>
               </div>
 
@@ -249,8 +250,11 @@ function App() {
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Categoria</label>
                 <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <option value="salario" selected>Alimentação</option>
-                  <option value="freelance">Internet</option>
+                  {
+                    expenseCategories.map((category, key) => (
+                      <option value={category.name} key={key}>{category.name}</option>
+                    ))
+                  }
                 </select>
               </div>
 
