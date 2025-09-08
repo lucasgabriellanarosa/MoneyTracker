@@ -10,8 +10,15 @@ import { MdClose, MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { IoFastFood } from 'react-icons/io5';
 import useGetCategories from './hooks/useGetCategories';
 import type { Category } from './@types/Category';
+import { supabase } from '../supabaseClient';
+import { useUserData } from './hooks/useUserData';
+import { useGetDailyReports } from './hooks/useGetDailyReports';
 
 function App() {
+
+  // Auth
+
+  const { user } = useUserData()
 
   // Add expense & add profits
   const [isAddProfitModalOpen, setIsAddProfitModalOpen] = useState(false)
@@ -22,16 +29,51 @@ function App() {
   const [profitCategories, setProfitCategories] = useState<Category[]>([])
   const [expenseCategories, setExpenseCategories] = useState<Category[]>([])
 
+  // New Profit
+
+  const [profitPrice, setProfitPrice] = useState<number>()
+  const [profitDescription, setProfitDescription] = useState('')
+  const [profitCategory, setProfitCategory] = useState('')
+  const [profitDate, setProfitDate] = useState('')
+
+  const handleAddNewProfit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!user) {
+      console.error("Usuário não logado")
+      return
+    }
+
+    const { error } = await supabase
+      .from("daily_reports")
+      .insert([
+        {
+          user_id: user.id,
+          price: profitPrice,
+          name: profitDescription,
+          category_id: profitCategory,
+          type: "receita",
+          date: profitDate
+        },
+      ])
+
+    if (error) {
+      console.error("Erro ao inserir receita:", error.message)
+    } else {
+      handleAddProfitModal()
+      setProfitPrice(0)
+      setProfitDescription('')
+      setProfitCategory('')
+      setProfitDate('')
+    }
+  }
+
   const handleAddProfitModal = () => {
-    console.log(profitCategories)
     setIsAddProfitModalOpen(!isAddProfitModalOpen)
   }
 
   const handleAddExpenseModal = () => {
-    console.log(expenseCategories)
     setIsAddExpenseModalOpen(!isAddExpenseModalOpen)
   }
-
 
   // Dates and calendar
   dayjs.locale('pt-br');
@@ -52,6 +94,9 @@ function App() {
   const [isYearSelectorOpen, setIsYearSelectorOpen] = useState(false);
   const yearOptions = Array.from({ length: 7 }, (_, i) => dayjs().year() - 3 + i);
 
+
+  const { reports, loading, error } = useGetDailyReports(selectedDate.format("YYYY-MM-DD"))
+
   useEffect(() => {
     if (carouselRef.current) {
       const selectedDayElement = carouselRef.current.querySelector(
@@ -68,7 +113,10 @@ function App() {
     setProfitCategories(categories.filter((cat) => cat.type === "receita"))
     setExpenseCategories(categories.filter((cat) => cat.type === "gasto"))
 
+
   }, [selectedDate, categories]);
+
+  console.log(reports)
 
   return (
     <>
@@ -167,38 +215,43 @@ function App() {
               </span>
             </div>
 
-            <form className='flex flex-col gap-4'>
+            <form className='flex flex-col gap-4' onSubmit={(e) => handleAddNewProfit(e)}>
 
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Valor</label>
                 <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
                   <span className='text-gray-500'>R$</span>
-                  <input type="number" className='w-full outline-0' placeholder='0,00' />
+                  <input type="number" className='w-full outline-0' placeholder='0,00' value={profitPrice} onChange={(e) => setProfitPrice(Number(e.target.value))} />
                 </div>
               </div>
 
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Descrição</label>
                 <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <input type="text" className='w-full outline-0' placeholder='Ex: Salário, Freelance...' />
+                  <input type="text" className='w-full outline-0' placeholder='Ex: Salário, Freelance...' value={profitDescription} onChange={(e) => setProfitDescription(e.target.value)} />
                 </div>
               </div>
 
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Categoria</label>
-                <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  {
-                    profitCategories.map((category, key) => (
-                      <option value={category.name} key={key}>{category.name}</option>
-                    ))
-                  }
+                <select
+                  className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'
+                  value={profitCategory}
+                  onChange={(e) => setProfitCategory(e.target.value)}
+                >
+                  <option value="">Selecione uma categoria</option>
+                  {profitCategories.map((category, key) => (
+                    <option value={category.id} key={key}>
+                      {category.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Data</label>
                 <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <input type="date" className='w-full outline-0' />
+                  <input type="date" className='w-full outline-0' value={profitDate} onChange={(e) => setProfitDate(e.target.value)} />
                 </div>
               </div>
 
@@ -278,7 +331,6 @@ function App() {
       }
 
 
-
       <section className='flex flex-col px-2 py-4 gap-6'>
 
         <div className='flex flex-row justify-between gap-4'>
@@ -319,24 +371,32 @@ function App() {
 
           <ul className='flex flex-col gap-2'>
 
-            <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4'>
-              <div className='text-2xl p-2 rounded-full bg-pink-200 text-pink-700 '>
-                <IoFastFood />
-              </div>
+            {
+              reports.map((report, key) => (
 
-              <div className='flex flex-col w-full'>
-                <div className='flex flex-row items-center justify-between text-black'>
-                  <h3>Alimentação</h3>
-                  <span>+R$ 45,00</span>
-                </div>
+                <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4' key={key}>
+                  <div className='text-2xl p-2 rounded-full bg-pink-200 text-pink-700 '>
+                    <IoFastFood />
+                  </div>
 
-                <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700'>
-                  <h4>Restaurante</h4>
-                  <span>12:15</span>
-                </div>
-              </div>
+                  <div className='flex flex-col w-full'>
+                    <div className='flex flex-row items-center justify-between text-black'>
+                      <h3>{report.name}</h3>
+                      <span>+R$ {report.price}</span>
+                    </div>
 
-            </li>
+                    <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700'>
+                      <h4>{report.categories?.name}</h4>
+                      <span>
+                        {dayjs(report.created_at).format("DD/MM/YYYY")}
+                      </span>
+                    </div>
+                  </div>
+
+                </li>
+              ))
+            }
+
 
             <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4'>
               <div className='text-2xl p-2 rounded-full bg-orange-200 text-orange-700'>
