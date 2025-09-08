@@ -95,7 +95,7 @@ function App() {
   const yearOptions = Array.from({ length: 7 }, (_, i) => dayjs().year() - 3 + i);
 
 
-  const { reports, loading, error } = useGetDailyReports(selectedDate.format("YYYY-MM-DD"))
+  const { reports } = useGetDailyReports(selectedDate.format("YYYY-MM-DD"))
 
   useEffect(() => {
     if (carouselRef.current) {
@@ -396,26 +396,6 @@ function App() {
                 </li>
               ))
             }
-
-
-            <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4'>
-              <div className='text-2xl p-2 rounded-full bg-orange-200 text-orange-700'>
-                <IoFastFood />
-              </div>
-
-              <div className='flex flex-col w-full'>
-                <div className='flex flex-row items-center justify-between text-black'>
-                  <h3>Alimentação</h3>
-                  <span>+R$ 45,00</span>
-                </div>
-
-                <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700'>
-                  <h4>Restaurante</h4>
-                  <span>12:15</span>
-                </div>
-              </div>
-
-            </li>
 
           </ul>
 

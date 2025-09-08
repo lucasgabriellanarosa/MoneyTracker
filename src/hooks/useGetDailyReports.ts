@@ -14,7 +14,12 @@ export function useGetDailyReports(selectedDate: string) {
       const { data, error } = await supabase
         .from("daily_reports")
         .select(`
-          *
+          *,
+          categories!daily_reports_category_id_fkey (
+            id,
+            name,
+            type
+          )
         `)
         .eq("date", selectedDate)
 
