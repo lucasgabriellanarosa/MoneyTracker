@@ -18,7 +18,9 @@ export function useGetDailyReports(selectedDate: string) {
           categories!daily_reports_category_id_fkey (
             id,
             name,
-            type
+            color,
+            type,
+            icon
           )
         `)
         .eq("date", selectedDate)

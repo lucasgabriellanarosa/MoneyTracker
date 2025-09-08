@@ -1,18 +1,19 @@
 import { FaArrowDown, FaArrowUp, FaChartBar } from 'react-icons/fa'
+import * as FaIcons from "react-icons/fa";
 import './App.css'
 import MoneyDetailsContainer from './components/MoneyDetailsContainer/MoneyDetailsContainer'
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from 'react-icons/io'
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MdClose, MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
-import { IoFastFood } from 'react-icons/io5';
 import useGetCategories from './hooks/useGetCategories';
 import type { Category } from './@types/Category';
 import { supabase } from '../supabaseClient';
 import { useUserData } from './hooks/useUserData';
 import { useGetDailyReports } from './hooks/useGetDailyReports';
+import { colors } from './utils/colors';
 
 function App() {
 
@@ -66,6 +67,45 @@ function App() {
       setProfitDate('')
     }
   }
+
+  // New Expense
+  const [expensePrice, setExpensePrice] = useState<number>()
+  const [expenseDescription, setExpenseDescription] = useState('')
+  const [expenseCategory, setExpenseCategory] = useState('')
+  const [expenseDate, setExpenseDate] = useState('')
+
+  const handleAddNewExpense = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!user) {
+      console.error("Usuário não logado")
+      return
+    }
+
+    const { error } = await supabase
+      .from("daily_reports")
+      .insert([
+        {
+          user_id: user.id,
+          price: expensePrice,
+          name: expenseDescription,
+          category_id: expenseCategory,
+          type: "gasto",
+          date: expenseDate
+        },
+      ])
+
+    if (error) {
+      console.error("Erro ao inserir gasto:", error.message)
+    } else {
+      handleAddExpenseModal()
+      setExpensePrice(0)
+      setExpenseDescription('')
+      setExpenseCategory('')
+      setExpenseDate('')
+    }
+  }
+
+  // Modal logic
 
   const handleAddProfitModal = () => {
     setIsAddProfitModalOpen(!isAddProfitModalOpen)
@@ -283,29 +323,30 @@ function App() {
               </span>
             </div>
 
-            <form className='flex flex-col gap-4'>
+            <form className='flex flex-col gap-4' onSubmit={(e) => handleAddNewExpense(e)}>
 
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Valor</label>
                 <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
                   <span className='text-gray-500'>R$</span>
-                  <input type="number" className='w-full outline-0' placeholder='0,00' />
+                  <input type="number" className='w-full outline-0' placeholder='0,00' value={expensePrice} onChange={(e) => setExpensePrice(Number(e.target.value))} />
                 </div>
               </div>
 
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Descrição</label>
                 <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <input type="text" className='w-full outline-0' placeholder='Ex: Aluguel, Alimentação...' />
+                  <input type="text" className='w-full outline-0' placeholder='Ex: Aluguel, Alimentação...' value={expenseDescription} onChange={(e) => setExpenseDescription(e.target.value)} />
                 </div>
               </div>
 
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Categoria</label>
-                <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1' value={expenseCategory} onChange={(e) => setExpenseCategory(e.target.value)}>
+                  <option value="">Selecione uma categoria</option>
                   {
                     expenseCategories.map((category, key) => (
-                      <option value={category.name} key={key}>{category.name}</option>
+                      <option value={category.id} key={key}>{category.name}</option>
                     ))
                   }
                 </select>
@@ -314,7 +355,7 @@ function App() {
               <div className='flex flex-col gap-1'>
                 <label className='text-sm text-gray-700'>Data</label>
                 <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <input type="date" className='w-full outline-0' />
+                  <input type="date" className='w-full outline-0' value={expenseDate} onChange={(e) => setExpenseDate(e.target.value)} />
                 </div>
               </div>
 
@@ -375,8 +416,9 @@ function App() {
               reports.map((report, key) => (
 
                 <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4' key={key}>
-                  <div className='text-2xl p-2 rounded-full bg-pink-200 text-pink-700 '>
-                    <IoFastFood />
+                  <div className={`text-2xl p-2 rounded-full ${colors[report.categories.color as keyof typeof colors].text} ${colors[report.categories.color as keyof typeof colors].bg}`}>
+                    {FaIcons[report.categories.icon as keyof typeof FaIcons] &&
+                      React.createElement(FaIcons[report.categories.icon as keyof typeof FaIcons])}
                   </div>
 
                   <div className='flex flex-col w-full'>
