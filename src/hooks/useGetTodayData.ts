@@ -44,7 +44,7 @@ export function useGetTodayData(selectedDate:string, userId?: string) {
         };
 
         fetchData();
-    }, [userId]);
+    }, [userId, selectedDate]);
 
     return { gastos, receitas, lucro, loading };
 }
