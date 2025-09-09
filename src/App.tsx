@@ -14,6 +14,7 @@ import { supabase } from '../supabaseClient';
 import { useUserData } from './hooks/useUserData';
 import { useGetDailyReports } from './hooks/useGetDailyReports';
 import { colors } from './utils/colors';
+import { useGetTodayData } from './hooks/useGetTodayData';
 
 function App() {
 
@@ -156,7 +157,8 @@ function App() {
 
   }, [selectedDate, categories]);
 
-  console.log(reports)
+  // Today Data
+  const { gastos, receitas, lucro } = useGetTodayData(selectedDate.format("YYYY-MM-DD"), user?.id);
 
   return (
     <>
@@ -223,17 +225,17 @@ function App() {
       <aside className='flex flex-col justify-center items-center gap-2 bg-gray-50 shadow-sm py-4 px-2'>
 
         <div className='flex flex-row gap-4 w-full'>
-          <MoneyDetailsContainer title={"Receitas"} value={1280}>
+          <MoneyDetailsContainer title={"Receitas"} value={receitas}>
             <FaArrowUp />
           </MoneyDetailsContainer>
 
-          <MoneyDetailsContainer title={"Gastos"} value={445}>
+          <MoneyDetailsContainer title={"Gastos"} value={gastos}>
             <FaArrowDown />
           </MoneyDetailsContainer>
 
         </div>
 
-        <MoneyDetailsContainer title={"Saldo Total"} value={835}>
+        <MoneyDetailsContainer title={"Saldo Total"} value={lucro}>
           <FaChartBar />
         </MoneyDetailsContainer>
 
@@ -413,30 +415,33 @@ function App() {
           <ul className='flex flex-col gap-2'>
 
             {
-              reports.map((report, key) => (
+              reports > [] ?
+                reports.map((report, key) => (
 
-                <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4' key={key}>
-                  <div className={`text-2xl p-2 rounded-full ${colors[report.categories.color as keyof typeof colors].text} ${colors[report.categories.color as keyof typeof colors].bg}`}>
-                    {FaIcons[report.categories.icon as keyof typeof FaIcons] &&
-                      React.createElement(FaIcons[report.categories.icon as keyof typeof FaIcons])}
-                  </div>
-
-                  <div className='flex flex-col w-full'>
-                    <div className='flex flex-row items-center justify-between text-black'>
-                      <h3>{report.name}</h3>
-                      <span>+R$ {report.price}</span>
+                  <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4' key={key}>
+                    <div className={`text-2xl p-2 rounded-full ${colors[report.categories.color as keyof typeof colors].text} ${colors[report.categories.color as keyof typeof colors].bg}`}>
+                      {FaIcons[report.categories.icon as keyof typeof FaIcons] &&
+                        React.createElement(FaIcons[report.categories.icon as keyof typeof FaIcons])}
                     </div>
 
-                    <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700'>
-                      <h4>{report.categories?.name}</h4>
-                      <span>
-                        {dayjs(report.created_at).format("DD/MM/YYYY")}
-                      </span>
-                    </div>
-                  </div>
+                    <div className='flex flex-col w-full'>
+                      <div className='flex flex-row items-center justify-between text-black'>
+                        <h3>{report.name}</h3>
+                        <span>+R$ {report.price}</span>
+                      </div>
 
-                </li>
-              ))
+                      <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700'>
+                        <h4>{report.categories?.name}</h4>
+                        <span>
+                          {dayjs(report.created_at).format("DD/MM/YYYY")}
+                        </span>
+                      </div>
+                    </div>
+
+                  </li>
+                ))
+              :
+              <p className='text-sm'>Nenhuma operação hoje.</p>
             }
 
           </ul>
