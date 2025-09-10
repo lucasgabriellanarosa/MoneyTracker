@@ -6,8 +6,8 @@ import { useUserData } from "../../hooks/useUserData";
 import useGetCategories from "../../hooks/useGetCategories";
 import * as FaIcons from "react-icons/fa";
 import { Dialog } from "@headlessui/react";
-import { FourSquare } from "react-loading-indicators";
 import { colors } from "../../utils/colors";
+import Loading from "../../components/Loading/Loading";
 
 function Categories() {
   const handleIsAddCategoryOpen = () => {
@@ -215,9 +215,7 @@ function Categories() {
 
       {
         loading ?
-          <section className="flex justify-center items-center py-20">
-            <FourSquare color="#0f172a" size="large" text="Carregando..." textColor="" />
-          </section>
+          <Loading />
           :
           <section className="px-2 py-4 flex flex-col gap-6">
 

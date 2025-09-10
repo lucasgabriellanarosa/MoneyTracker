@@ -15,6 +15,7 @@ import { useUserData } from './hooks/useUserData';
 import { useGetDailyReports } from './hooks/useGetDailyReports';
 import { colors } from './utils/colors';
 import { useGetTodayData } from './hooks/useGetTodayData';
+import Loading from './components/Loading/Loading';
 
 function App() {
 
@@ -158,12 +159,13 @@ function App() {
   }, [selectedDate, categories]);
 
   // Today Data
-  const { gastos, receitas, lucro } = useGetTodayData(selectedDate.format("YYYY-MM-DD"), user?.id);
+  const { gastos, receitas, lucro, loading } = useGetTodayData(selectedDate.format("YYYY-MM-DD"), user?.id);
 
   return (
+
     <>
 
-      <header className='flex flex-col w-full bg-gray-50'>
+      <header className='flex flex-col w-full bg-gray-50 shadow-sm'>
 
         <section className='flex flex-col py-2 px-4'>
           <div className='flex flex-row justify-between'>
@@ -222,234 +224,241 @@ function App() {
 
       </header >
 
-      <aside className='flex flex-col justify-center items-center gap-2 bg-gray-50 shadow-sm py-4 px-2'>
-
-        <div className='flex flex-row gap-4 w-full'>
-          <MoneyDetailsContainer title={"Receitas"} value={receitas}>
-            <FaArrowUp />
-          </MoneyDetailsContainer>
-
-          <MoneyDetailsContainer title={"Gastos"} value={gastos}>
-            <FaArrowDown />
-          </MoneyDetailsContainer>
-
-        </div>
-
-        <MoneyDetailsContainer title={"Saldo Total"} value={lucro}>
-          <FaChartBar />
-        </MoneyDetailsContainer>
-
-      </aside>
-
       {
-        isAddProfitModalOpen &&
-        <section className='fixed inset-0 overflow-hidden h-screen w-full bg-black/50 z-50 px-1 flex justify-center items-end'>
+        loading ?
+          <Loading />
+          :
+          <>
 
-          <div className='bg-white w-full px-4 py-6 rounded-t-lg flex flex-col gap-4'>
+            <aside className='flex flex-col justify-center items-center gap-2 py-4 px-2'>
 
-            <div className='flex flex-row justify-between items-center'>
-              <h2 className='font-semibold'>Nova Receita</h2>
+              <div className='flex flex-row gap-4 w-full'>
+                <MoneyDetailsContainer title={"Receitas"} value={receitas}>
+                  <FaArrowUp />
+                </MoneyDetailsContainer>
 
-              <span className='text-lg'
-                onClick={() => handleAddProfitModal()}
-              >
-                <MdClose />
-              </span>
-            </div>
+                <MoneyDetailsContainer title={"Gastos"} value={gastos}>
+                  <FaArrowDown />
+                </MoneyDetailsContainer>
 
-            <form className='flex flex-col gap-4' onSubmit={(e) => handleAddNewProfit(e)}>
-
-              <div className='flex flex-col gap-1'>
-                <label className='text-sm text-gray-700'>Valor</label>
-                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <span className='text-gray-500'>R$</span>
-                  <input type="number" className='w-full outline-0' placeholder='0,00' value={profitPrice} onChange={(e) => setProfitPrice(Number(e.target.value))} />
-                </div>
               </div>
 
-              <div className='flex flex-col gap-1'>
-                <label className='text-sm text-gray-700'>Descrição</label>
-                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <input type="text" className='w-full outline-0' placeholder='Ex: Salário, Freelance...' value={profitDescription} onChange={(e) => setProfitDescription(e.target.value)} />
-                </div>
-              </div>
+              <MoneyDetailsContainer title={"Saldo Total"} value={lucro}>
+                <FaChartBar />
+              </MoneyDetailsContainer>
 
-              <div className='flex flex-col gap-1'>
-                <label className='text-sm text-gray-700'>Categoria</label>
-                <select
-                  className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'
-                  value={profitCategory}
-                  onChange={(e) => setProfitCategory(e.target.value)}
-                >
-                  <option value="">Selecione uma categoria</option>
-                  {profitCategories.map((category, key) => (
-                    <option value={category.id} key={key}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className='flex flex-col gap-1'>
-                <label className='text-sm text-gray-700'>Data</label>
-                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <input type="date" className='w-full outline-0' value={profitDate} onChange={(e) => setProfitDate(e.target.value)} />
-                </div>
-              </div>
-
-              <button className='bg-green-500 text-white font-semibold py-2 rounded-md'>
-                Adicionar Receita
-              </button>
-
-            </form>
-
-          </div>
-
-
-        </section>
-      }
-
-      {
-        isAddExpenseModalOpen &&
-        <section className='fixed inset-0 overflow-hidden h-screen w-full bg-black/50 z-50 px-1 flex justify-center items-end'>
-
-          <div className='bg-white w-full px-4 py-6 rounded-t-lg flex flex-col gap-4'>
-
-            <div className='flex flex-row justify-between items-center'>
-              <h2 className='font-semibold'>Novo Gasto</h2>
-
-              <span className='text-lg'
-                onClick={() => handleAddExpenseModal()}
-              >
-                <MdClose />
-              </span>
-            </div>
-
-            <form className='flex flex-col gap-4' onSubmit={(e) => handleAddNewExpense(e)}>
-
-              <div className='flex flex-col gap-1'>
-                <label className='text-sm text-gray-700'>Valor</label>
-                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <span className='text-gray-500'>R$</span>
-                  <input type="number" className='w-full outline-0' placeholder='0,00' value={expensePrice} onChange={(e) => setExpensePrice(Number(e.target.value))} />
-                </div>
-              </div>
-
-              <div className='flex flex-col gap-1'>
-                <label className='text-sm text-gray-700'>Descrição</label>
-                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <input type="text" className='w-full outline-0' placeholder='Ex: Aluguel, Alimentação...' value={expenseDescription} onChange={(e) => setExpenseDescription(e.target.value)} />
-                </div>
-              </div>
-
-              <div className='flex flex-col gap-1'>
-                <label className='text-sm text-gray-700'>Categoria</label>
-                <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1' value={expenseCategory} onChange={(e) => setExpenseCategory(e.target.value)}>
-                  <option value="">Selecione uma categoria</option>
-                  {
-                    expenseCategories.map((category, key) => (
-                      <option value={category.id} key={key}>{category.name}</option>
-                    ))
-                  }
-                </select>
-              </div>
-
-              <div className='flex flex-col gap-1'>
-                <label className='text-sm text-gray-700'>Data</label>
-                <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
-                  <input type="date" className='w-full outline-0' value={expenseDate} onChange={(e) => setExpenseDate(e.target.value)} />
-                </div>
-              </div>
-
-              <button className='bg-red-500 text-white font-semibold py-2 rounded-md'>
-                Adicionar Gasto
-              </button>
-
-            </form>
-
-          </div>
-
-
-        </section>
-      }
-
-
-      <section className='flex flex-col px-2 py-4 gap-6'>
-
-        <div className='flex flex-row justify-between gap-4'>
-
-          <button className='bg-slate-800 text-white flex flex-col justify-center items-center rounded-lg p-4 w-full'
-            onClick={() => handleAddProfitModal()}
-          >
-
-            <span className='text-lg'>
-              <IoMdAddCircleOutline />
-            </span>
-
-            <span>Nova Receita</span>
-
-          </button>
-
-          <button className='border border-gray-400 flex flex-col justify-center items-center rounded-lg p-4 w-full'
-            onClick={() => handleAddExpenseModal()}
-          >
-
-            <span className='text-lg'>
-              <IoMdRemoveCircleOutline />
-            </span>
-
-            <span
-            >Adicionar Gasto</span>
-
-          </button>
-
-        </div>
-
-        <div className="flex flex-col gap-4">
-
-          <div className='flex flex-row justify-between items-center text-lg'>
-            <h2 className='text-base font-semibold'>Transações Recentes</h2>
-
-          </div>
-
-          <ul className='flex flex-col gap-2'>
+            </aside>
 
             {
-              reports > [] ?
-                reports.map((report, key) => (
+              isAddProfitModalOpen &&
+              <section className='fixed inset-0 overflow-hidden h-screen w-full bg-black/50 z-50 px-1 flex justify-center items-end'>
 
-                  <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4' key={key}>
-                    <div className={`text-2xl p-2 rounded-full ${colors[report.categories.color as keyof typeof colors].text} ${colors[report.categories.color as keyof typeof colors].bg}`}>
-                      {FaIcons[report.categories.icon as keyof typeof FaIcons] &&
-                        React.createElement(FaIcons[report.categories.icon as keyof typeof FaIcons])}
+                <div className='bg-white w-full px-4 py-6 rounded-t-lg flex flex-col gap-4'>
+
+                  <div className='flex flex-row justify-between items-center'>
+                    <h2 className='font-semibold'>Nova Receita</h2>
+
+                    <span className='text-lg'
+                      onClick={() => handleAddProfitModal()}
+                    >
+                      <MdClose />
+                    </span>
+                  </div>
+
+                  <form className='flex flex-col gap-4' onSubmit={(e) => handleAddNewProfit(e)}>
+
+                    <div className='flex flex-col gap-1'>
+                      <label className='text-sm text-gray-700'>Valor</label>
+                      <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                        <span className='text-gray-500'>R$</span>
+                        <input type="number" className='w-full outline-0' placeholder='0,00' value={profitPrice} onChange={(e) => setProfitPrice(Number(e.target.value))} />
+                      </div>
                     </div>
 
-                    <div className='flex flex-col w-full'>
-                      <div className='flex flex-row items-center justify-between text-black'>
-                        <h3>{report.name}</h3>
-                        <span>+R$ {report.price}</span>
-                      </div>
-
-                      <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700'>
-                        <h4>{report.categories?.name}</h4>
-                        <span>
-                          {dayjs(report.created_at).format("DD/MM/YYYY")}
-                        </span>
+                    <div className='flex flex-col gap-1'>
+                      <label className='text-sm text-gray-700'>Descrição</label>
+                      <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                        <input type="text" className='w-full outline-0' placeholder='Ex: Salário, Freelance...' value={profitDescription} onChange={(e) => setProfitDescription(e.target.value)} />
                       </div>
                     </div>
 
-                  </li>
-                ))
-              :
-              <p className='text-sm'>Nenhuma operação hoje.</p>
+                    <div className='flex flex-col gap-1'>
+                      <label className='text-sm text-gray-700'>Categoria</label>
+                      <select
+                        className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'
+                        value={profitCategory}
+                        onChange={(e) => setProfitCategory(e.target.value)}
+                      >
+                        <option value="">Selecione uma categoria</option>
+                        {profitCategories.map((category, key) => (
+                          <option value={category.id} key={key}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className='flex flex-col gap-1'>
+                      <label className='text-sm text-gray-700'>Data</label>
+                      <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                        <input type="date" className='w-full outline-0' value={profitDate} onChange={(e) => setProfitDate(e.target.value)} />
+                      </div>
+                    </div>
+
+                    <button className='bg-green-500 text-white font-semibold py-2 rounded-md'>
+                      Adicionar Receita
+                    </button>
+
+                  </form>
+
+                </div>
+
+
+              </section>
             }
 
-          </ul>
+            {
+              isAddExpenseModalOpen &&
+              <section className='fixed inset-0 overflow-hidden h-screen w-full bg-black/50 z-50 px-1 flex justify-center items-end'>
 
-        </div>
+                <div className='bg-white w-full px-4 py-6 rounded-t-lg flex flex-col gap-4'>
 
-      </section>
+                  <div className='flex flex-row justify-between items-center'>
+                    <h2 className='font-semibold'>Novo Gasto</h2>
 
+                    <span className='text-lg'
+                      onClick={() => handleAddExpenseModal()}
+                    >
+                      <MdClose />
+                    </span>
+                  </div>
+
+                  <form className='flex flex-col gap-4' onSubmit={(e) => handleAddNewExpense(e)}>
+
+                    <div className='flex flex-col gap-1'>
+                      <label className='text-sm text-gray-700'>Valor</label>
+                      <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                        <span className='text-gray-500'>R$</span>
+                        <input type="number" className='w-full outline-0' placeholder='0,00' value={expensePrice} onChange={(e) => setExpensePrice(Number(e.target.value))} />
+                      </div>
+                    </div>
+
+                    <div className='flex flex-col gap-1'>
+                      <label className='text-sm text-gray-700'>Descrição</label>
+                      <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                        <input type="text" className='w-full outline-0' placeholder='Ex: Aluguel, Alimentação...' value={expenseDescription} onChange={(e) => setExpenseDescription(e.target.value)} />
+                      </div>
+                    </div>
+
+                    <div className='flex flex-col gap-1'>
+                      <label className='text-sm text-gray-700'>Categoria</label>
+                      <select className='flex flex-row border border-gray-300 p-2 rounded-md gap-1' value={expenseCategory} onChange={(e) => setExpenseCategory(e.target.value)}>
+                        <option value="">Selecione uma categoria</option>
+                        {
+                          expenseCategories.map((category, key) => (
+                            <option value={category.id} key={key}>{category.name}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+
+                    <div className='flex flex-col gap-1'>
+                      <label className='text-sm text-gray-700'>Data</label>
+                      <div className='flex flex-row border border-gray-300 p-2 rounded-md gap-1'>
+                        <input type="date" className='w-full outline-0' value={expenseDate} onChange={(e) => setExpenseDate(e.target.value)} />
+                      </div>
+                    </div>
+
+                    <button className='bg-red-500 text-white font-semibold py-2 rounded-md'>
+                      Adicionar Gasto
+                    </button>
+
+                  </form>
+
+                </div>
+
+
+              </section>
+            }
+
+
+            <section className='flex flex-col px-2 py-4 gap-6'>
+
+              <div className='flex flex-row justify-between gap-4'>
+
+                <button className='bg-slate-800 text-white flex flex-col justify-center items-center rounded-lg p-4 w-full'
+                  onClick={() => handleAddProfitModal()}
+                >
+
+                  <span className='text-lg'>
+                    <IoMdAddCircleOutline />
+                  </span>
+
+                  <span>Nova Receita</span>
+
+                </button>
+
+                <button className='border border-gray-400 flex flex-col justify-center items-center rounded-lg p-4 w-full'
+                  onClick={() => handleAddExpenseModal()}
+                >
+
+                  <span className='text-lg'>
+                    <IoMdRemoveCircleOutline />
+                  </span>
+
+                  <span
+                  >Adicionar Gasto</span>
+
+                </button>
+
+              </div>
+
+              <div className="flex flex-col gap-4">
+
+                <div className='flex flex-row justify-between items-center text-lg'>
+                  <h2 className='text-base font-semibold'>Transações Recentes</h2>
+
+                </div>
+
+                <ul className='flex flex-col gap-2'>
+
+                  {
+                    reports > [] ?
+                      reports.map((report, key) => (
+
+                        <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4' key={key}>
+                          <div className={`text-2xl p-2 rounded-full ${colors[report.categories.color as keyof typeof colors].text} ${colors[report.categories.color as keyof typeof colors].bg}`}>
+                            {FaIcons[report.categories.icon as keyof typeof FaIcons] &&
+                              React.createElement(FaIcons[report.categories.icon as keyof typeof FaIcons])}
+                          </div>
+
+                          <div className='flex flex-col w-full'>
+                            <div className='flex flex-row items-center justify-between text-black'>
+                              <h3>{report.name}</h3>
+                              <span>+R$ {report.price}</span>
+                            </div>
+
+                            <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700'>
+                              <h4>{report.categories?.name}</h4>
+                              <span>
+                                {dayjs(report.created_at).format("DD/MM/YYYY")}
+                              </span>
+                            </div>
+                          </div>
+
+                        </li>
+                      ))
+                      :
+                      <p className='text-sm'>Nenhuma operação hoje.</p>
+                  }
+
+                </ul>
+
+              </div>
+
+            </section>
+          </>
+      }
 
     </>
   )
