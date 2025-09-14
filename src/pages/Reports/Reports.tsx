@@ -1,28 +1,97 @@
+import dayjs from "dayjs"
 import Loading from "../../components/Loading/Loading"
 import { useGetUserSummary } from "../../hooks/useGetUserSummary"
 import { useUserData } from "../../hooks/useUserData"
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { useEffect, useRef, useState } from "react";
+import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
+import useGetMonthGraphData from "../../hooks/useGetMonthGraphData";
+import { PieChart } from '@mui/x-charts/PieChart';
 
 function Reports() {
   const { user } = useUserData()
 
-  const { gastos, receitas, saldo, loading } = useGetUserSummary(user?.id)
+  // Dates and calendar
+  dayjs.locale('pt-br');
+  dayjs.extend(customParseFormat);
+  const today = dayjs();
+  const [selectedDate, setSelectedDate] = useState(today)
+  const carouselRef = useRef<HTMLUListElement>(null);
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    setSelectedDate(prev => prev[direction === 'prev' ? 'subtract' : 'add'](1, 'month'));
+  };
+
+  const [isYearSelectorOpen, setIsYearSelectorOpen] = useState(false);
+  const yearOptions = Array.from({ length: 7 }, (_, i) => dayjs().year() - 3 + i);
+
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      const selectedDayElement = carouselRef.current.querySelector(
+        `[data-day="${selectedDate.format('DD-MM-YYYY')}"]`
+      );
+
+      selectedDayElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+
+  }, [selectedDate]);
+
+  // Get User Reports
+  const { gastos, receitas, saldo, loading } = useGetUserSummary(selectedDate.format("YYYY-MM-DD"), user?.id)
+
+
+  const { data: gastosPorCategoria, isGraphLoading } = useGetMonthGraphData(
+    selectedDate.format("YYYY-MM-DD"),
+    user?.id
+  );
 
   return (
     <>
-      <aside className='flex flex-col justify-center items-center gap-2 bg-gray-50 shadow-sm py-4 px-2'>
-        <h2 className="w-full uppercase text-sm text-gray-700">Período</h2>
-        <ul className="w-full flex flex-row gap-2 text-sm">
-          <li>
-            <button className="bg-black text-white py-1 px-2 rounded-md">Este Mês</button>
-          </li>
-          <li>
-            <button className="py-1 px-2 bg-white border border-gray-300 rounded-md">Este Ano</button>
-          </li>
-          <li>
-            <button className="py-1 px-2 bg-white border border-gray-300 rounded-md">Todo Período</button>
-          </li>
-        </ul>
-      </aside>
+
+      <header className='flex flex-col w-full bg-gray-50 shadow-sm'>
+
+        <section className='flex flex-col py-2 px-4'>
+          <div className='flex flex-row justify-between'>
+            <button className='text-sm'
+              onClick={() => setIsYearSelectorOpen(prev => !prev)}
+            >
+              {selectedDate.format("YYYY")}
+            </button>
+            {isYearSelectorOpen && (
+              <ul className='absolute mt-1 bg-white border border-gray-500 rounded shadow-md z-50 max-h-60 overflow-y-auto'>
+                {yearOptions.map((year) => (
+                  <li
+                    key={year}
+                    className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${selectedDate.year() === year ? 'bg-gray-300' : ''}`}
+                    onClick={() => {
+                      setSelectedDate(selectedDate.year(year));
+                      setIsYearSelectorOpen(false);
+                    }}
+                  >
+                    {year}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <nav className='flex flex-row items-center justify-around text-xl'>
+            <span onClick={() => navigateMonth('prev')} className="cursor-pointer">
+              <MdNavigateBefore />
+            </span>
+            <button className='text-base font-bold capitalize w-[100px] text-center'>{selectedDate.format("MMMM")}</button>
+            <span onClick={() => navigateMonth('next')} className="cursor-pointer">
+              <MdNavigateNext />
+            </span>
+          </nav>
+        </section>
+
+      </header >
 
       {
         loading ?
@@ -51,6 +120,19 @@ function Reports() {
                 </div>
 
               </div>
+              {
+                isGraphLoading ? (
+                  <Loading />
+                ) : gastosPorCategoria.length > 0 ? (
+                  <PieChart
+                    series={[{ data: gastosPorCategoria }]}
+                    width={200}
+                    height={200}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-500">Nenhum gasto encontrado neste mês.</p>
+                )
+              }
             </div>
 
           </section>
