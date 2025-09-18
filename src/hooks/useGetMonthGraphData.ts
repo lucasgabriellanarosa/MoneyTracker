@@ -3,74 +3,91 @@ import { supabase } from "../../supabaseClient";
 import dayjs from "dayjs";
 
 type GraphData = {
-    id: number;
-    label: string;
-    value: number;
-}
+  id: number;
+  label: string;
+  value: number;
+  color: string;
+};
 
 function useGetMonthGraphData(selectedDate: string, userId?: string) {
-    const [data, setData] = useState<GraphData[]>([]);
-    const [isGraphLoading, setIsGraphLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const [expensesData, setExpensesData] = useState<GraphData[]>([]);
+  const [profitsData, setProfitsData] = useState<GraphData[]>([]);
+  const [isGraphLoading, setIsGraphLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    async function fetchCategorySummary() {
+      if (!userId) return;
+      setIsGraphLoading(true);
 
-    useEffect(() => {
-        async function fetchCategorySummary() {
-            if (!userId) return;
-            setIsGraphLoading(true);
+      const startOfMonth = dayjs(selectedDate)
+        .startOf("month")
+        .format("YYYY-MM-DD");
+      const endOfMonth = dayjs(selectedDate)
+        .endOf("month")
+        .format("YYYY-MM-DD");
 
+      try {
+        const { data, error } = await supabase
+          .from("daily_reports")
+          .select(
+            `
+              price,
+              type,
+              categories!daily_reports_category_id_fkey (
+                id,
+                name,
+                color
+              )
+            `
+          )
+          .eq("user_id", userId)
+          .gte("date", startOfMonth)
+          .lte("date", endOfMonth);
 
+        if (error) throw error;
 
-            const startOfMonth = dayjs(selectedDate).startOf('month').format("YYYY-MM-DD");
-            const endOfMonth = dayjs(selectedDate).endOf('month').format("YYYY-MM-DD");
+        const gastos = (data ?? []).filter((t) => t.type === "gasto");
+        const receitas = (data ?? []).filter((t) => t.type === "receita");
 
-            const { data, error } = await supabase
-                .from("daily_reports")
-                .select(`
-                price,
-                categories!daily_reports_category_id_fkey (
-                    id,
-                    name
-                )
-                `)
-                .eq("user_id", userId)
-                .eq("type", "gasto")
-                .gte("date", startOfMonth)
-                .lte("date", endOfMonth);
+        const groupByCategory = (items: any[]) => {
+          const grouped = items.reduce(
+            (acc: Record<string, { total: number; color?: string }>, t: any) => {
+              const cat = t.categories?.name || "Sem categoria";
+              const valor = Number(t.price) || 0;
+              const color = t.categories?.color;
 
+              if (!acc[cat]) {
+                acc[cat] = { total: 0, color };
+              }
+              acc[cat].total += valor;
+              return acc;
+            },
+            {}
+          );
 
-            if (error) {
-                console.error(error);
-                setError(error.message);
-                setIsGraphLoading(false);
-                return;
-            }
+          return Object.entries(grouped).map(([categoria, { total, color }], i) => ({
+            id: i,
+            label: categoria,
+            value: total,
+            color: color ?? "#cccccc"
+          }));
+        };
 
-            // Agrupamento por categoria
-            const grouped = (data ?? []).reduce((acc: Record<string, number>,  t: any) => {
-                const cat = t.categories?.name || "Sem categoria";
-                const valor = Number(t.price) || 0;
-                acc[cat] = (acc[cat] || 0) + valor;
-                return acc;
-            }, {});
+        setExpensesData(groupByCategory(gastos));
+        setProfitsData(groupByCategory(receitas));
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message);
+      } finally {
+        setIsGraphLoading(false);
+      }
+    }
 
-            // Transformar em formato para o gráfico
-            const formatted: GraphData[] = Object.entries(grouped).map(
-                ([categoria, total], i) => ({
-                    id: i,
-                    label: categoria,
-                    value: total,
-                })
-            );
+    fetchCategorySummary();
+  }, [selectedDate, userId]);
 
-            setData(formatted);
-            setIsGraphLoading(false);
-        }
-
-        fetchCategorySummary();
-    }, [selectedDate, userId]);
-
-    return { data, isGraphLoading, error };
+  return { expensesData, profitsData, isGraphLoading, error };
 }
 
 export default useGetMonthGraphData;

@@ -45,7 +45,7 @@ function Reports() {
   const { gastos, receitas, saldo, loading } = useGetUserSummary(selectedDate.format("YYYY-MM-DD"), user?.id)
 
 
-  const { data: gastosPorCategoria, isGraphLoading } = useGetMonthGraphData(
+  const { expensesData, profitsData, isGraphLoading } = useGetMonthGraphData(
     selectedDate.format("YYYY-MM-DD"),
     user?.id
   );
@@ -120,17 +120,38 @@ function Reports() {
                 </div>
 
               </div>
+
+            </div>
+
+            <div className="flex flex-col gap-2 items-center justify-center">
+              <h3 className="text-sm text-gray-700">Gastos por categoria</h3>
               {
                 isGraphLoading ? (
                   <Loading />
-                ) : gastosPorCategoria.length > 0 ? (
+                ) : expensesData.length > 0 ?
                   <PieChart
-                    series={[{ data: gastosPorCategoria }]}
+                    series={[{ data: expensesData }]}
+                    width={200}
+                    height={200}
+                  />
+                 : 
+                  <p className="text-sm text-gray-500">Nenhum gasto encontrado neste mês.</p>
+              }
+            </div>
+
+            <div className="flex flex-col gap-2 items-center justify-center">
+              <h3 className="text-sm text-gray-700">Receitas por categoria</h3>
+              {
+                isGraphLoading ? (
+                  <Loading />
+                ) : profitsData.length > 0 ? (
+                  <PieChart
+                    series={[{ data: profitsData }]}
                     width={200}
                     height={200}
                   />
                 ) : (
-                  <p className="text-sm text-gray-500">Nenhum gasto encontrado neste mês.</p>
+                  <p className="text-sm text-gray-500">Nenhuma receita encontrado neste mês.</p>
                 )
               }
             </div>
