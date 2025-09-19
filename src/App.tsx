@@ -167,9 +167,9 @@ function App() {
 
       <header className='flex flex-col w-full bg-gray-50 shadow-sm'>
 
-        <section className='flex flex-col py-2 px-4'>
+        <section className='flex flex-col py-2 px-4 md:py-4 md:px-6'>
           <div className='flex flex-row justify-between'>
-            <button className='text-sm'
+            <button className='text-sm md:text-base'
               onClick={() => setIsYearSelectorOpen(prev => !prev)}
             >
               {selectedDate.format("YYYY")}
@@ -192,11 +192,11 @@ function App() {
             )}
           </div>
 
-          <nav className='flex flex-row items-center justify-around text-xl'>
+          <nav className='flex flex-row items-center justify-around text-xl md:text-2xl '>
             <span onClick={() => navigateMonth('prev')} className="cursor-pointer">
               <MdNavigateBefore />
             </span>
-            <button className='text-base font-bold capitalize w-[100px] text-center'>{selectedDate.format("MMMM")}</button>
+            <button className='text-base font-bold capitalize w-[100px] text-center md:text-lg'>{selectedDate.format("MMMM")}</button>
             <span onClick={() => navigateMonth('next')} className="cursor-pointer">
               <MdNavigateNext />
             </span>
@@ -205,7 +205,7 @@ function App() {
 
         <ul
           ref={carouselRef}
-          className='flex flex-row py-2 gap-4 px-4 overflow-x-auto'
+          className='flex flex-row py-2 gap-4 px-4 overflow-x-auto md:text-lg md:px-6'
         >
           {daysInMonth.map((day) => (
             <li
@@ -230,7 +230,7 @@ function App() {
           :
           <>
 
-            <aside className='flex flex-col justify-center items-center gap-2 py-4 px-2'>
+            <aside className='flex flex-col justify-center items-center gap-2 py-4 px-2 md:px-6 md:py-6 md:gap-3'>
 
               <div className='flex flex-row gap-4 w-full'>
                 <MoneyDetailsContainer title={"Receitas"} value={receitas}>
@@ -382,32 +382,31 @@ function App() {
             }
 
 
-            <section className='flex flex-col px-2 py-4 gap-6'>
+            <section className='flex flex-col px-2 py-4 gap-6 md:px-6'>
 
-              <div className='flex flex-row justify-between gap-4'>
+              <div className='flex flex-row justify-between gap-4 md:gap-6'>
 
-                <button className='bg-slate-800 text-white flex flex-col justify-center items-center rounded-lg p-4 w-full'
+                <button className='bg-slate-800 text-white flex flex-col justify-center items-center rounded-lg p-4 w-full md:gap-1'
                   onClick={() => handleAddProfitModal()}
                 >
 
-                  <span className='text-lg'>
+                  <span className='text-lg md:text-xl'>
                     <IoMdAddCircleOutline />
                   </span>
 
-                  <span>Nova Receita</span>
+                  <span className='text-base md:text-lg'>Nova Receita</span>
 
                 </button>
 
-                <button className='border border-gray-400 flex flex-col justify-center items-center rounded-lg p-4 w-full'
+                <button className='border border-gray-400 flex flex-col justify-center items-center rounded-lg p-4 w-full md:gap-1'
                   onClick={() => handleAddExpenseModal()}
                 >
 
-                  <span className='text-lg'>
+                  <span className='text-lg md:text-xl'>
                     <IoMdRemoveCircleOutline />
                   </span>
 
-                  <span
-                  >Adicionar Gasto</span>
+                  <span className='text-base md:text-lg'>Adicionar Gasto</span>
 
                 </button>
 
@@ -415,30 +414,30 @@ function App() {
 
               <div className="flex flex-col gap-4">
 
-                <div className='flex flex-row justify-between items-center text-lg'>
-                  <h2 className='text-base font-semibold'>Transações Recentes</h2>
+                <div className='flex flex-row justify-between items-center'>
+                  <h2 className='text-base font-semibold md:text-lg'>Transações Recentes</h2>
 
                 </div>
 
-                <ul className='flex flex-col gap-2'>
+                <ul className='flex flex-col gap-2 md:gap-4'>
 
                   {
                     reports > [] ?
                       reports.map((report, key) => (
 
-                        <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4' key={key}>
-                          <div className={`text-2xl p-2 rounded-full ${colors[report.categories.color as keyof typeof colors].text} ${colors[report.categories.color as keyof typeof colors].bg}`}>
+                        <li className='flex flex-row border border-gray-400 rounded-md py-2 px-3 items-center gap-4 md:px-4 md:py-3' key={key}>
+                          <div className={`text-2xl p-2 rounded-full ${colors[report.categories.color as keyof typeof colors].text} ${colors[report.categories.color as keyof typeof colors].bg} md:text-3xl md:p-3`}>
                             {FaIcons[report.categories.icon as keyof typeof FaIcons] &&
                               React.createElement(FaIcons[report.categories.icon as keyof typeof FaIcons])}
                           </div>
 
                           <div className='flex flex-col w-full'>
-                            <div className='flex flex-row items-center justify-between text-black'>
+                            <div className='flex flex-row items-center justify-between text-black md:text-lg'>
                               <h3>{report.name}</h3>
                               <span>+R$ {report.price}</span>
                             </div>
 
-                            <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700'>
+                            <div className='flex flex-row items-center-safe justify-between text-sm text-gray-700 md:text-base'>
                               <h4>{report.categories?.name}</h4>
                               <span>
                                 {dayjs(report.created_at).format("DD/MM/YYYY")}

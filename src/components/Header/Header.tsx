@@ -7,8 +7,8 @@ function Header() {
   const { user } = useUserData()
 
   return (
-    <header className="flex flex-row justify-between items-center p-2 border-b border-gray-200">
-      <div className="flex justify-center items-center gap-2">
+    <header className="flex flex-row justify-between items-center p-2 border-b border-gray-200 md:px-4 md:text-lg ">
+      <div className="flex justify-center items-center gap-2 md:gap-3">
         <FaWallet />
 
         <h1>MoneyTracker</h1>
